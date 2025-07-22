@@ -1,5 +1,6 @@
 import React from 'react'
 import { UserIcon } from 'lucide-react'
+import axios from 'axios'
 
 export default function Admin() {
 
@@ -12,8 +13,8 @@ export default function Admin() {
       age: e.target[2].value,
       diseases: e.target[3].value
     }
-
-    let Res = axios.post("http://localhost:8000/api/patient/add", Data)
+    console.log(Data);
+    let Res = await axios.post("http://localhost:8000/api/patient/create", Data)
   }
 
   return (
