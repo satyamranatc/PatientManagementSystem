@@ -1,8 +1,24 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import { UserIcon } from 'lucide-react'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import axios from 'axios'
 
 export default function Admin() {
+
+
+  let [patientList,setPatientList] = useState([]);
+
+  useEffect(()=>{
+    async function getData() 
+    {
+
+      let Res = await axios.get("http://localhost:8000/api/patient/list");
+      setPatientList(Res.data);
+    }
+    getData();
+  },[])
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -14,7 +30,13 @@ export default function Admin() {
       diseases: e.target[3].value
     }
     console.log(Data);
-    let Res = await axios.post("http://localhost:8000/api/patient/create", Data)
+    let Res = await axios.post("http://localhost:8000/api/patient/create", Data);
+    if(Res.data.status == "success"){
+      toast.success("Patient Added Successfully!");
+    }
+    else{
+      toast.error("Something went wrong!");
+    }
   }
 
   return (
@@ -91,7 +113,36 @@ export default function Admin() {
 
           </form>
         </section>
+
+      
+        <section className="mt-8">
+            <table className="w-full bg-white rounded-lg shadow-md overflow-hidden">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-3 text-left text-gray-700 font-medium">Name</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-medium">Picture</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-medium">Diseases</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-medium">Update</th>
+                  <th className="px-4 py-3 text-left text-gray-700 font-medium">Delete</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {
+                  patientList.map((e,i)=>(
+                    <tr key={i} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-gray-800">{e.name}</td>
+                      <td className="px-4 py-3"><img src={e.pic} alt="" className="w-12 h-12 rounded-full object-cover" /></td>
+                      <td className="px-4 py-3 text-gray-800">{e.diseases}</td>
+                      <td className="px-4 py-3"><button className="bg-blue-600 text-white px-4 py-2 rounded-lg">Update</button></td>
+                      <td className="px-4 py-3"><button className="bg-red-600 text-white px-4 py-2 rounded-lg">Delete</button></td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+        </section>
       </div>
+      <ToastContainer />
     </div>
   )
 }

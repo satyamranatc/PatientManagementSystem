@@ -17,3 +17,11 @@ def PatientCreate(request):
     return Response({
         "status": "success"
     })
+
+
+@api_view(['delete'])
+def PatientDelete(req,id):
+    Patient.objects.filter(id=id).delete()
+    return Response({
+        "status": "success"
+    })
